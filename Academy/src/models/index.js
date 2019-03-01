@@ -13,8 +13,16 @@ Object.keys(models).forEach((modelName) => {
   }
 });
 
-models.Students.belongsTo(models.Mentors);  
-models.Mentors.hasMany(models.Students);  
+models.Students.belongsTo(models.Mentors, {
+  through: 'students_mentors',
+  foreignKey: 'students_id',
+  otherKey: 'mentors_id'
+});  
+models.Mentors.belongsToMany(models.Students, {
+  through: 'students_mentors',
+  foreignKey: 'mentors_id',
+  otherKey: 'students_id'
+});  
 
 models.Mentors.belongsTo(models.Menagement);  
 models.Menagement.hasMany(models.Mentors);
