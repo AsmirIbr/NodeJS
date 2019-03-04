@@ -5,7 +5,13 @@ import models from '../models/index';
 const Mentors = models.Mentors;
 
 const list = async(req, res, next) => {
-  const result: Array = await Mentors.findAll();
+  const result: Array = await Mentors.findAll({
+    include: [
+      {
+        model: models.Students
+      }
+    ]
+  });
   res.status(200).send(result);
   await next;
 };
@@ -13,18 +19,27 @@ const list = async(req, res, next) => {
 const get = async(req, res, next) => {
   const { id }: { id: string } = req.params;
 
-  const result: Object = await Mentors.find({ where: { id }});
+  const result: Object = await Mentors.find({ 
+    where: { id },
+    include: [
+      {
+        model: models.Students
+      }
+    ]
+  });
   res.status(200).send(result);
   await next;
 };
 
 const create = async(req, res, next) => {
   const {
+    menagementId,
     firstName,
     lastName,
     email,
     role
   }: {
+    menagementId: string,
     firstName: string,
     lastName: string,
     email: ?string,
@@ -35,6 +50,7 @@ const create = async(req, res, next) => {
   
   await Mentors.create({
     id: mentorId,
+    menagementId,
     firstName,
     lastName,
     email,

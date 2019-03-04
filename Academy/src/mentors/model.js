@@ -5,6 +5,10 @@ export default (sequelize, DataType) => {
       type: DataType.STRING,
       primaryKey: true,
     },
+    menagementId: {
+      type: DataType.STRING,
+      allowNull: false,
+    },
     firstName: {
       type: DataType.STRING,
       allowNull: false,

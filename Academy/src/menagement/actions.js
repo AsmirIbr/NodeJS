@@ -5,7 +5,16 @@ import models from '../models/index';
 const Menagement = models.Menagement;
 
 const list = async(req, res, next) => {
-  const result: Array = await Menagement.findAll();
+  const result: Array = await Menagement.findAll({
+    include: [
+      {
+        model: models.Mentors,
+        include: [{
+          model: models.Students
+        }],
+      }
+    ]
+  });
   res.status(200).send(result);
   await next;
 };
@@ -13,7 +22,16 @@ const list = async(req, res, next) => {
 const get = async(req, res, next) => {
   const { id }: { id: string } = req.params;
 
-  const result: Object = await Menagement.find({ where: { id }});
+  const result: Object = await Menagement.find({ 
+    where: { id },
+    include: [
+      {
+        model: models.Mentors,
+        include: [{
+          model: models.Students
+        }],
+      }]
+  });
   res.status(200).send(result);
   await next;
 };
@@ -40,7 +58,7 @@ const create = async(req, res, next) => {
     email,
     role
   });
-  res.status(201).send({ Info: `Mentor with id: ${menagementId} has been created`})
+  res.status(201).send({ Info: `Menagement with id: ${menagementId} has been created`})
   
   await next;
 };
@@ -56,7 +74,7 @@ const update = async(req, res, next) => {
   } = Object.assign({}, req.body);
 
   await Menagement.update(updateData, { where: { id }});
-  res.status(204).send({ Info: `Mentor with id: ${menagementId} has been updated` })
+  res.status(204).send({ Info: `Menagement with id: ${menagementId} has been updated` })
   await next;
 };
 
@@ -64,7 +82,7 @@ const del = async(req, res, next) => {
   const { id }: { id: string } = req.params;
 
   await Menagement.destroy({ where: { id }});
-  res.status(202).send({ Info: `Mentor with id: ${menagementId} has been removed`})
+  res.status(202).send({ Info: `Menagement with id: ${menagementId} has been removed`})
   await next;
 };
 

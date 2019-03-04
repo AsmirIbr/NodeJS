@@ -20,10 +20,12 @@ const get = async(req, res, next) => {
 
 const create = async(req, res, next) => {
   const {
+    mentorId,
     firstName,
     lastName,
     email
   }: {
+    mentorId: string,
     firstName: string,
     lastName: string,
     email: ?string
@@ -33,6 +35,7 @@ const create = async(req, res, next) => {
   
   await Students.create({
     id: studentId,
+    mentorId,
     firstName,
     lastName,
     email,

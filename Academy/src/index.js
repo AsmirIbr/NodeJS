@@ -9,7 +9,7 @@ import Students from './students/index';
 import Mentors from './mentors/index';
 
 const app = express();
-const port = process.env.PORT || 3010;
+const port = process.env.PORT || 3000;
 
 app.use(logger('dev'));
 app.use(cors());
