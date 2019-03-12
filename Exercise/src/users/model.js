@@ -9,6 +9,36 @@ export default (sequelize, DataType) => {
           type: DataType.STRING,
           allowNUll: false
     },
+    email: {
+      type: DataType.STRING,
+      allowNull: false,
+        unique: true,
+        validate: {
+          len: {
+            args: [6, 128],
+            msg: "Email address must be between 6 and 128 characters in length"
+          },
+          isEmail: {
+            msg: "Email address must be valid"
+          }
+        }
+    },
+    username: {
+      type: DataType.STRING,
+      validate: {
+        isAlphanumeric: true,
+      }
+    },
+    password: {
+      type: DataType.STRING,
+      allowNull: false,
+      validate: {
+        len: {
+          args: 6
+        }
+      }
+    },
+    passHash: DataType.STRING,
     // personal: [
       // personelDetails: {
       personelID: DataType.STRING,
@@ -28,7 +58,6 @@ export default (sequelize, DataType) => {
         city: DataType.STRING,
         municipality: DataType.STRING,
         zip: DataType.STRING,
-        email: DataType.STRING,
       // },
     // ],
     // contacts: {

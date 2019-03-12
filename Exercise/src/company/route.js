@@ -12,6 +12,7 @@ companyRouter.get('/companyOR', actions.getOR);
 companyRouter.post('/company', actions.create);
 companyRouter.get('/company/:id', actions.getCompany);
 companyRouter.delete('/company/:id', actions.del);
-companyRouter.put('/company/:id', actions.update)
+companyRouter.put('/company/:id', actions.update);
+companyRouter.get('/company/:companyId/users/:id', actions.getUserFromCompany);
 
 export default companyRouter;

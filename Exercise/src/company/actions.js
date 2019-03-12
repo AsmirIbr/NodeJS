@@ -1,20 +1,28 @@
 import hat from 'hat';
 import Sequelize from 'sequelize';
 import Bluebird from 'bluebird';
-import bcrypt from 'bcrypt';
 
 import models from '../models/index';
 
-Bluebird.promisifyAll(bcrypt);
-
 const Company = models.Company;
+const Users = models.Users;
 const Op = Sequelize.Op;
+
+// Bluebird.promisifyAll();
 
 const companyIdValidation = Bluebird.coroutine(
   function* validationCompanyId(id: string) {
     const results: Array = yield Company.findAll();
     const companyIds = results.map(companyId => companyId.id);
     return companyIds.includes(id);
+  }
+);
+
+const usersIdValidation = Bluebird.coroutine(
+  function* validationUsersId(id: string) {
+    const results: Array = yield Users.findAll();
+    const usersIds = results.map(usersId => usersId.id);
+    return usersIds.includes(id);
   }
 );
 
@@ -100,12 +108,36 @@ const getCompany = async(req, res, next) => {
   const validationCompanyId = await companyIdValidation(id);
 
   if (validationCompanyId) {
-    const result: Object = await Company.find({ where: { id }});
+    const result: Object = await Company.find({
+      where: { id },
+      include:[{
+        model: models.Users
+      }]
+    });
     res.status(200).send(result);
   }
   res.status(400).send({ info: `Company id ${id} is not found`});
 
   await next;
+}
+
+const getUserFromCompany = async(req, res, next) => {
+  const { companyId }: { companyId: string } = req.params;
+  const { id }: { id: string } = req.params;
+   
+  const validationCompanyId = await companyIdValidation(companyId);
+
+  if (validationCompanyId) {
+    const validationUsersId = await usersIdValidation(id);
+
+  if (validationUsersId) {
+    const result: Object = await Users.find({ where: { id }});
+    res.status(200).send(result);
+  }
+      res.status(400).send({ info: `User id ${companyId} is not found`});
+  }
+  
+  res.status(400).send({ info: `Company id ${companyId} is not found`});
 }
 
 const create = async(req, res, next) => {
@@ -116,32 +148,20 @@ const create = async(req, res, next) => {
     foudedOn,
     numberOfEmployees,
     location,
-    email,
-    username,
-    password,
   }: {
     name: string,
     empolyeeID: ?string,
     foudedOn: ?string,
     numberOfEmployees: ?string,
     location: ?string,
-    email: string,
-    username: string,
-    password: string
   } = req.body;
 
   const companyId = hat();
-  const salt = await bcrypt.genSaltSync(10);
-  const passHash = await bcrypt.hashSync(password, salt);
 
     await Company.create({
     id: companyId,
     name,
     location,
-    email,
-    username,
-    password,
-    passHash,
     empolyeeID,
     foudedOn,
     numberOfEmployees,
@@ -199,5 +219,6 @@ export default {
   create,
   update,
   getLike,
-  del
+  del,
+  getUserFromCompany
 }
