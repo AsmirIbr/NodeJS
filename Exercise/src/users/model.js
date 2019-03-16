@@ -5,10 +5,11 @@ export default (sequelize, DataType) => {
       type: DataType.STRING,
       primaryKey: true,
     },
-    companyId: {
-          type: DataType.STRING,
-          allowNUll: false
-    },
+    // companyId: {
+    //       type: DataType.STRING,
+    //       allowNUll: false
+    // },
+    name: DataType.STRING,
     email: {
       type: DataType.STRING,
       allowNull: false,
@@ -25,27 +26,36 @@ export default (sequelize, DataType) => {
     },
     username: {
       type: DataType.STRING,
+      allowNull: false,
+      unique: true,
       validate: {
         isAlphanumeric: true,
+        len: {
+          args: [6, 128],
+          msg: "Username must be between 6 and 128 characters in length"
+        }
       }
     },
     password: {
       type: DataType.STRING,
       allowNull: false,
-      validate: {
-        len: {
-          args: 6
-        }
-      }
+      // validate: {
+      //   len: {
+      //     args: [5, 20],
+      //     msg: 'The password needs to be between 5 and 100 characters long',
+      //   },
+      // }
     },
-    passHash: DataType.STRING,
+    salt: {
+      type: DataType.STRING,
+    },
     // personal: [
       // personelDetails: {
       personelID: DataType.STRING,
-        firstName: {
-          type: DataType.STRING,
-          allowNUll: false
-        },
+        // firstName: {
+        //   type: DataType.STRING,
+        //   allowNUll: false
+        // },
         lastName: DataType.STRING,
         gender: DataType.STRING,
         dateOfBirth: DataType.STRING,
@@ -84,7 +94,8 @@ export default (sequelize, DataType) => {
     },
     deletedAt: {
       type: DataType.DATE
-    }
+    },
+    lastSignIn: DataType.DATE
   });
   return Users;
 }

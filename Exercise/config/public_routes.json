@@ -1,0 +1,20 @@
+{
+  "dev": [
+    "/",
+    "/auth",
+    "/auth/login",
+    "/signup",
+    "/auth/reset-password",
+    "/auth/forgotPassword",
+    "/auth/reset",
+    "/company",
+    "/company/:id"
+  ],
+  "staging": [
+    "/",
+    "/auth",
+    "/auth/login",
+    "/signup"
+  ],
+  "production": []
+}
