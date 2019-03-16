@@ -197,46 +197,93 @@ const del = async(req, res, next) => {
 
 const login = async (req, res, next) => {
   const {
-    username, password
-  }: { username: string, password: string } = req.body;
+    username, email,  password
+  }: { username: ?string, email: ?string, password: string } = req.body;
 
-  if (username) {
-    const user = await Users.find({ where: { username }});
-    if (!user) {
-      const email = username;
-      const withEmail = await Users.find({ where: { email }});
-      if (withEmail){
-        const passCheck = await bcrypt.compareSync(password, withEmail.password);
-      if (passCheck) {
-        const secretKey = secrets[process.env.NODE_ENV || 'dev'];
-        const token = jwt.sign({ user }, secretKey, { expiresIn: '1h' });
-        const lastSignIn = { lastSignIn: Date.now(), resetPasswordToken: null, resetPasswordExpires: null, };
-        await Users.update(lastSignIn, { where: { email } });
+  if(!username & !email){
+    res.status(404).send('Email or username is required!');
+  } else {
+      if (username) {
+        const user = await Users.find({ where: { username }});
+        if (!user) {
+          res.status(404).send('User not found');
+        } else {
+          const passCheck = await bcrypt.compareSync(password, user.password);
+        if (passCheck) {
+          const secretKey = secrets[process.env.NODE_ENV || 'dev'];
+          const token = jwt.sign({ user }, secretKey, { expiresIn: '1h' });
+          const lastSignIn = { lastSignIn: Date.now(), resetPasswordToken: null, resetPasswordExpires: null, };
+          await Users.update(lastSignIn, { where: { username } });
 
         res.status(200).send({ body: { token }, message: `Welcome ${username} to Code Academy. You have been successfully logged in.` });
-      } else {
-        res.status(403).send({ message: 'Incorrect password' });
+        } else {
+          res.status(403).send({ message: 'Incorrect password' });
+        }
       }
-      }
-      
-      res.status(404).send('User not found');
     } else {
-      const passCheck = await bcrypt.compareSync(password, user.password);
-      if (passCheck) {
-        const secretKey = secrets[process.env.NODE_ENV || 'dev'];
-        const token = jwt.sign({ user }, secretKey, { expiresIn: '1h' });
-        const lastSignIn = { lastSignIn: Date.now(), resetPasswordToken: null, resetPasswordExpires: null, };
-        await Users.update(lastSignIn, { where: { username } });
+      const user = await Users.find({ where: { email }});
+        if (!user) {
+          res.status(404).send('User not found');
+        } else {
+          const passCheck = await bcrypt.compareSync(password, user.password);
+        if (passCheck) {
+          const secretKey = secrets[process.env.NODE_ENV || 'dev'];
+          const token = jwt.sign({ user }, secretKey, { expiresIn: '1h' });
+          const lastSignIn = { lastSignIn: Date.now(), resetPasswordToken: null, resetPasswordExpires: null, };
+          await Users.update(lastSignIn, { where: { email } });
 
-        res.status(200).send({ body: { token }, message: `Welcome ${username} to Code Academy. You have been successfully logged in.` });
-      } else {
-        res.status(403).send({ message: 'Incorrect password' });
+        res.status(200).send({ body: { token }, message: `Welcome ${email} to Code Academy. You have been successfully logged in.` });
+        } else {
+          res.status(403).send({ message: 'Incorrect password' });
+        }
       }
     }
-  } else {
-    res.status(404).send({ message: 'User is not found' });
+    
   }
 }
+
+// const login = async (req, res, next) => {
+//   const {
+//     username, password
+//   }: { username: string, password: string } = req.body;
+
+//   if (username) {
+//     const user = await Users.find({ where: { username }});
+//     if (!user) {
+//       const email = username;
+//       const withEmail = await Users.find({ where: { email }});
+//       if (withEmail){
+//         const passCheck = await bcrypt.compareSync(password, withEmail.password);
+//       if (passCheck) {
+//         const secretKey = secrets[process.env.NODE_ENV || 'dev'];
+//         const token = jwt.sign({ user }, secretKey, { expiresIn: '1h' });
+//         const lastSignIn = { lastSignIn: Date.now(), resetPasswordToken: null, resetPasswordExpires: null, };
+//         await Users.update(lastSignIn, { where: { email } });
+
+//         res.status(200).send({ body: { token }, message: `Welcome ${username} to Code Academy. You have been successfully logged in.` });
+//       } else {
+//         res.status(403).send({ message: 'Incorrect password' });
+//       }
+//       }
+      
+//       res.status(404).send('User not found');
+//     } else {
+//       const passCheck = await bcrypt.compareSync(password, user.password);
+//       if (passCheck) {
+//         const secretKey = secrets[process.env.NODE_ENV || 'dev'];
+//         const token = jwt.sign({ user }, secretKey, { expiresIn: '1h' });
+//         const lastSignIn = { lastSignIn: Date.now(), resetPasswordToken: null, resetPasswordExpires: null, };
+//         await Users.update(lastSignIn, { where: { username } });
+
+//         res.status(200).send({ body: { token }, message: `Welcome ${username} to Code Academy. You have been successfully logged in.` });
+//       } else {
+//         res.status(403).send({ message: 'Incorrect password' });
+//       }
+//     }
+//   } else {
+//     res.status(404).send({ message: 'User is not found' });
+//   }
+// }
 
 const resetPassword = async (req, res, next) => {
   const { 
@@ -274,3 +321,19 @@ export default {
   login,
   resetPassword
 }
+
+// const email = username;
+// const withEmail = await Users.find({ where: { email }});
+// if (withEmail){
+//   const passCheck = await bcrypt.compareSync(password, withEmail.password);
+// if (passCheck) {
+//   const secretKey = secrets[process.env.NODE_ENV || 'dev'];
+//   const token = jwt.sign({ user }, secretKey, { expiresIn: '1h' });
+//   const lastSignIn = { lastSignIn: Date.now(), resetPasswordToken: null, resetPasswordExpires: null, };
+//   await Users.update(lastSignIn, { where: { email } });
+
+//   res.status(200).send({ body: { token }, message: `Welcome ${username} to Code Academy. You have been successfully logged in.` });
+// } else {
+//   res.status(403).send({ message: 'Incorrect password' });
+// }
+// }
