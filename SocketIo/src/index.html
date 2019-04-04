@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    .chat{
+      width: 200px;
+      height: 200px;
+      /* background: white; */
+      margin-bottom: 25px;
+    }
+  </style>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io('http://localhost:3000');
+  console.log('socket', socket);
+  socket.on('connect', ()=> { console.log('hoooo')})
+  socket.on('event', (data) => {
+    console.log('data', data)
+  })
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+</head>
+<body>
+  <div id="chatbox" class="chat"></div>
+    <input id="textbox" type="text">
+    <button id="send">Send</button>
+    <button id="history">History</button>
+    <div id="historyBox"></div>
+
+    <script>
+    var inputField = document.getElementById("textbox");
+    var sendButton = document.getElementById("send");
+    var historyButton = document.getElementById("history");
+
+    sendButton.addEventListener("click", (event) => {
+      console.log(inputField.value);
+      socket.emit("chat", inputField.value);
+      $(".chat").html("");
+      $.ajax({
+            url: 'http://127.0.0.1:3000/msg',
+            contentType: 'application/json; charset: utf-8',
+            dataType: 'json',
+            data: JSON.stringify(),
+            type: 'GET',
+            success: ((res) =>{
+                console.log("Result: ", res)
+                for (let i = 0; i < 7; i++) {
+                   $(".chat").append($("<div>").html(res[i].msg));
+                  
+                } 
+                // res.forEach(message => {
+                //   console.log(message.msg)
+                //   $(".chat").append($("<div>").html(message.msg));
+                // });
+                // $(".chat").html()
+            }),
+            error: ((error) =>{
+                console.log("Error: ", error);
+            })
+        });
+    })
+
+    historyButton.addEventListener("click", (event) => {
+      $(".chat").html("");
+      $.ajax({
+            url: 'http://127.0.0.1:3000/msg',
+            contentType: 'application/json; charset: utf-8',
+            dataType: 'json',
+            data: JSON.stringify(),
+            type: 'GET',
+            success: ((res) =>{
+                console.log("Result: ", res)
+                  $("#historyBox").html("")
+                for (let i = 0; i < res.length; i++) {
+                   $("#historyBox").append($("<div>").html(res[i].msg));
+                  
+                }
+                // res.forEach(message => {
+                //   console.log(message.msg)
+                //   $(".chat").append($("<div>").html(message.msg));
+                // });
+                // $(".chat").html()
+            }),
+            error: ((error) =>{
+                console.log("Error: ", error);
+            })
+        });
+       
+    })
+
+
+    </script>
+</body>
+</html>
